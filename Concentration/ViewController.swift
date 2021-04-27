@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    lazy var game = ConcentrationGame(numberOfPairsOfCards: (buttonCollection.count + 1) / 2)
+    lazy var game = ConcentrationGame(numberOfPairsOfCards: buttonCollection.count / 2)
     
     var touches = 0 {
         didSet {
@@ -35,22 +35,25 @@ class ViewController: UIViewController {
             let card = game.cards[index]
             if card.isFaceUp {
                 button.setTitle(emojiIdentifier(for: card), for: .normal)
-                button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
+                button.backgroundColor = .white
             } else {
                 button.setTitle("", for: .normal)
-                button.backgroundColor = card.isMatched ? #colorLiteral(red: 0.9999960065, green: 1, blue: 1, alpha: 0) : #colorLiteral(red: 0, green: 0.5690457821, blue: 0.5746168494, alpha: 1)
+                button.backgroundColor = card.isMatched ? .white : #colorLiteral(red: 0.360244453, green: 0.3216490746, blue: 0.8701937795, alpha: 1)
             }
         }
     }
     
-    @IBOutlet var buttonCollection: [UIButton]!
     @IBOutlet weak var touchLabel: UILabel!
-    @IBAction func buttonAction(_ sender: UIButton) {
+    @IBOutlet var buttonCollection: [UIButton]!
+    @IBAction func buttonTouched(_ sender: UIButton) {
+        guard !game.checkForFinish() else { return }
         touches += 1
         if let buttonIndex = buttonCollection.firstIndex(of: sender) {
             game.chooseCard(at: buttonIndex)
             updateViewFromModel()
         }
+        if game.checkForFinish() {
+            touchLabel.text = "Won in \(touches) steps!"
+        }
     }
 }
-
