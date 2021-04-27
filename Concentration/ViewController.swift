@@ -56,4 +56,10 @@ class ViewController: UIViewController {
             touchLabel.text = "Won in \(touches) steps!"
         }
     }
+    @IBAction func restartTouched(_ sender: UIButton) {
+        touches = 0
+        game = ConcentrationGame(numberOfPairsOfCards: buttonCollection.count / 2)
+        emojiCollection = ["🦊", "🐰", "🐸", "🐶", "🐭", "🐻", "🐷", "🐮", "🦁", "🐯", "🐨", "🐻‍❄️", "🐼"]
+        updateViewFromModel()
+    }
 }
