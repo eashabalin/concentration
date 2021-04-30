@@ -15,9 +15,18 @@ class ViewController: UIViewController {
         return buttonCollection.count / 2
     }
     
+    private func updateTouches() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .strokeWidth: 5.0,
+            .strokeColor: UIColor.red
+        ]
+        let attributedString = NSAttributedString(string: "Touches: \(touches)", attributes: attributes)
+        touchLabel.attributedText = attributedString
+    }
+    
     private(set) var touches = 0 {
         didSet {
-            touchLabel.text = "Touches: \(touches)"
+            updateTouches()
         }
     }
     
@@ -48,7 +57,11 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBOutlet private weak var touchLabel: UILabel!
+    @IBOutlet private weak var touchLabel: UILabel! {
+        didSet {
+            updateTouches()
+        }
+    }
     @IBOutlet private var buttonCollection: [UIButton]!
     @IBAction private func buttonTouched(_ sender: UIButton) {
         guard !game.checkForFinish() else { return }
