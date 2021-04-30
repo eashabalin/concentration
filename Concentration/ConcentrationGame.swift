@@ -9,26 +9,38 @@ import Foundation
 
 class ConcentrationGame {
     
-    var cards = [Card]()
+    private(set) var cards = [Card]()
     
-    var oneAndOnlyFaseUpCardIndex: Int?
+    private var oneAndOnlyFaseUpCardIndex: Int? {
+        get {
+            var foundIndex: Int?
+            for index in cards.indices {
+                if cards[index].isFaceUp {
+                    if foundIndex == nil {
+                        foundIndex = index
+                    } else {
+                        return nil
+                    }
+                }
+            }
+            return foundIndex
+        }
+        set {
+            for index in cards.indices {
+                cards[index].isFaceUp = (index == newValue)
+            }
+        }
+    }
     
     func chooseCard(at index: Int) {
         if !cards[index].isMatched {
             if let matchingCardIndex = oneAndOnlyFaseUpCardIndex {
-                if cards[index].identifier == cards[matchingCardIndex].identifier, index != matchingCardIndex {
-                    cards[index].isFaceUp = true
+                if cards[index] == cards[matchingCardIndex], index != matchingCardIndex {
                     cards[index].isMatched = true
                     cards[matchingCardIndex].isMatched = true
-                } else {
-                    cards[index].isFaceUp = true
-                }
-                oneAndOnlyFaseUpCardIndex = nil
-            } else {
-                for index in cards.indices {
-                    cards[index].isFaceUp = false
                 }
                 cards[index].isFaceUp = true
+            } else {
                 oneAndOnlyFaseUpCardIndex = index
             }
         }
@@ -44,6 +56,7 @@ class ConcentrationGame {
     }
     
     init(numberOfPairsOfCards: Int) {
+        assert(numberOfPairsOfCards > 0, "ConcentrationGame.init(\(numberOfPairsOfCards): must have at least one pair of cards")
         var unshuffledCards = [Card]()
         let shuffledIndices = Array(Set(0...numberOfPairsOfCards * 2 - 1))
         for _ in 1...numberOfPairsOfCards {

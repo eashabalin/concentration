@@ -9,27 +9,32 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    lazy var game = ConcentrationGame(numberOfPairsOfCards: buttonCollection.count / 2)
+    private lazy var game = ConcentrationGame(numberOfPairsOfCards: numberOfPairsOfCards)
     
-    var touches = 0 {
+    var numberOfPairsOfCards: Int {
+        return buttonCollection.count / 2
+    }
+    
+    private(set) var touches = 0 {
         didSet {
             touchLabel.text = "Touches: \(touches)"
         }
     }
     
-    var emojiCollection = ["🦊", "🐰", "🐸", "🐶", "🐭", "🐻", "🐷", "🐮", "🦁", "🐯", "🐨", "🐻‍❄️", "🐼"]
+//    private var emojiCollection = ["🦊", "🐰", "🐸", "🐶", "🐭", "🐻", "🐷", "🐮", "🦁", "🐯", "🐨", "🐻‍❄️", "🐼"]
+    private var emojiCollection = "🦊🐰🐸🐶🐭🐻🐷🐮🦁🐯🐨🐻‍❄️🐼"
     
-    var emojiDictionary = [Int: String]()
+    private var emojiDictionary = [Card: String]()
     
-    func emojiIdentifier(for card: Card) -> String {
-        if emojiDictionary[card.identifier] == nil {
-            let randomIndex = Int(arc4random_uniform(UInt32(emojiCollection.count)))
-            emojiDictionary[card.identifier] = emojiCollection.remove(at: randomIndex)
+    private func emojiIdentifier(for card: Card) -> String {
+        if emojiDictionary[card] == nil {
+            let randomStringIndex = emojiCollection.index(emojiCollection.startIndex, offsetBy: emojiCollection.count.arc4randomExtension)
+            emojiDictionary[card] = String(emojiCollection.remove(at: randomStringIndex))
         }
-        return emojiDictionary[card.identifier] ?? "?"
+        return emojiDictionary[card] ?? "?"
     }
     
-    func updateViewFromModel() {
+    private func updateViewFromModel() {
         for index in buttonCollection.indices {
             let button = buttonCollection[index]
             let card = game.cards[index]
@@ -43,9 +48,9 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBOutlet weak var touchLabel: UILabel!
-    @IBOutlet var buttonCollection: [UIButton]!
-    @IBAction func buttonTouched(_ sender: UIButton) {
+    @IBOutlet private weak var touchLabel: UILabel!
+    @IBOutlet private var buttonCollection: [UIButton]!
+    @IBAction private func buttonTouched(_ sender: UIButton) {
         guard !game.checkForFinish() else { return }
         touches += 1
         if let buttonIndex = buttonCollection.firstIndex(of: sender) {
@@ -56,10 +61,22 @@ class ViewController: UIViewController {
             touchLabel.text = "Won in \(touches) steps!"
         }
     }
-    @IBAction func restartTouched(_ sender: UIButton) {
+    @IBAction private func restartTouched(_ sender: UIButton) {
         touches = 0
         game = ConcentrationGame(numberOfPairsOfCards: buttonCollection.count / 2)
-        emojiCollection = ["🦊", "🐰", "🐸", "🐶", "🐭", "🐻", "🐷", "🐮", "🦁", "🐯", "🐨", "🐻‍❄️", "🐼"]
+        emojiCollection = "🦊🐰🐸🐶🐭🐻🐷🐮🦁🐯🐨🐻‍❄️🐼"
         updateViewFromModel()
+    }
+}
+
+extension Int {
+    var arc4randomExtension: Int {
+        if self > 0 {
+            return Int(arc4random_uniform(UInt32(self)))
+        } else if self < 0 {
+            return -Int(arc4random_uniform(UInt32(abs(self))))
+        } else {
+            return 0
+        }
     }
 }
